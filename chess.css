@@ -1,0 +1,756 @@
+*{
+
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+
+}
+
+body{
+
+    background-color: rgb(116, 71, 50);
+    padding-top: 1.4em;
+
+
+}
+
+.square {
+    position: relative;
+    width: 45%;
+    margin: auto;
+  }
+  
+  .square:after {
+    content: '';
+    display: block;
+    padding-bottom: 100%;
+  }
+
+.tablero{
+
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+    background-color: ivory;
+    border: 1px solid rgb(133, 133, 133);
+    box-shadow: rgb(54, 54, 54) 5px 5px 5px;
+    margin: auto;
+
+    display: grid;
+
+    grid-template-areas: "a8 b8 c8 d8 e8 f8 g8 h8"
+                         "a7 b7 c7 d7 e7 f7 g7 h7"
+                         "a6 b6 c6 d6 e6 f6 g6 h6"
+                         "a5 b5 c5 d5 e5 f5 g5 h5"
+                         "a4 b4 c4 d4 e4 f4 g4 h4"
+                         "a3 b3 c3 d3 e3 f3 g3 h3"
+                         "a2 b2 c2 d2 e2 f2 g2 h2"
+                         "a1 b1 c1 d1 e1 f1 g1 h1";
+
+}   
+
+    /*Primera Fila*/
+
+.a8{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: a8;
+    
+
+}
+
+.b8{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: b8;
+    
+}
+
+.c8{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: c8;
+    
+
+}
+
+.d8{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: d8;
+    
+}
+
+.e8{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: e8;
+    
+
+}
+
+.f8{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: f8;
+    
+}
+
+.g8{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: g8;
+    
+
+}
+
+.h8{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: h8;
+    
+}
+
+/*2da fila*/
+
+.a7{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: a7;
+    
+
+}
+
+.b7{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: b7;
+    
+}
+
+.c7{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: c7;
+    
+
+}
+
+.d7{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: d7;
+    
+}
+
+.e7{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: e7;
+    
+
+}
+
+.f7{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: f7;
+    
+}
+
+.g7{
+
+    background-color: rgb(51, 94, 45);
+    grid-area: g7;
+    
+
+}
+
+.h7{
+
+    background-color: rgb(247, 247, 247);
+    grid-area: h7;
+    
+}
+
+    /*3era Fila*/
+
+    .a6{
+
+        background-color: rgb(247, 247, 247);
+        grid-area: a6;
+        
+    
+    }
+    
+    .b6{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: b6;
+        
+    }
+    
+    .c6{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: c6;
+        
+    
+    }
+    
+    .d6{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: d6;
+        
+    }
+    
+    .e6{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: e6;
+        
+    
+    }
+    
+    .f6{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: f6;
+        
+    }
+    
+    .g6{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: g6;
+        
+    
+    }
+    
+    .h6{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: h6;
+        
+    }
+    
+    /*4ta fila*/
+    
+    .a5{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: a5;
+        
+    
+    }
+    
+    .b5{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: b5;
+        
+    }
+    
+    .c5{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: c5;
+        
+    
+    }
+    
+    .d5{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: d5;
+        
+    }
+    
+    .e5{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: e5;
+        
+    
+    }
+    
+    .f5{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: f5;
+        
+    }
+    
+    .g5{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: g5;
+        
+    
+    }
+    
+    .h5{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: h5;
+        
+    }
+
+    /*5ta Fila*/
+
+    .a4{
+
+        background-color: rgb(247, 247, 247);
+        grid-area: a4;
+        
+    
+    }
+    
+    .b4{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: b4;
+        
+    }
+    
+    .c4{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: c4;
+        
+    
+    }
+    
+    .d4{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: d4;
+        
+    }
+    
+    .e4{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: e4;
+        
+    
+    }
+    
+    .f4{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: f4;
+        
+    }
+    
+    .g4{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: g4;
+        
+    
+    }
+    
+    .h4{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: h4;
+        
+    }
+    
+    /*6ta fila*/
+    
+    .a3{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: a3;
+        
+    
+    }
+    
+    .b3{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: b3;
+        
+    }
+    
+    .c3{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: c3;
+        
+    
+    }
+    
+    .d3{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: d3;
+        
+    }
+    
+    .e3{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: e3;
+        
+    
+    }
+    
+    .f3{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: f3;
+        
+    }
+    
+    .g3{
+    
+        background-color: rgb(51, 94, 45);
+        grid-area: g3;
+        
+    
+    }
+    
+    .h3{
+    
+        background-color: rgb(247, 247, 247);
+        grid-area: h3;
+        
+    }
+    
+        /*7ma Fila*/
+    
+        .a2{
+    
+            background-color: rgb(247, 247, 247);
+            grid-area: a2;
+            
+        
+        }
+        
+        .b2{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: b2;
+            
+        }
+        
+        .c2{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: c2;
+            
+        
+        }
+        
+        .d2{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: d2;
+            
+        }
+        
+        .e2{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: e2;
+            
+        
+        }
+        
+        .f2{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: f2;
+            
+        }
+        
+        .g2{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: g2;
+            
+        
+        }
+        
+        .h2{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: h2;
+            
+        }
+        
+        /*8va fila*/
+        
+        .a1{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: a1;
+            
+        
+        }
+        
+        .b1{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: b1;
+            
+        }
+        
+        .c1{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: c1;
+            
+        
+        }
+        
+        .d1{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: d1;
+            
+        }
+        
+        .e1{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: e1;
+            
+        
+        }
+        
+        .f1{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: f1;
+            
+        }
+        
+        .g1{
+        
+            background-color: rgb(51, 94, 45);
+            grid-area: g1;
+            
+        
+        }
+        
+        .h1{
+        
+            background-color: rgb(247, 247, 247);
+            grid-area: h1;
+            
+        }
+
+.recuadro{
+
+    position: relative;
+
+
+}
+
+.pieza{
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: auto;
+    cursor:grab;
+
+}
+
+.pieza:active{
+
+    cursor: grab;
+
+}
+
+
+.encima{
+
+    transition: all 0.8s ease;
+    background-color: cornflowerblue;
+    
+}
+
+.overlay{
+
+    position: absolute;
+    top: 0px;
+    background-color: rgba(0, 0, 0, 0.488);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
+
+}
+
+.ventana{
+
+    width: 30%;
+    height: max-content;
+    padding: 2em;
+    background-color: white;
+}
+
+.ventana h5{
+
+    color: rgb(27, 87, 199);
+    margin: auto;
+    font-size: 1.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+
+}
+
+.opciones{
+
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6em;
+
+}
+
+.opciones img{
+
+    width: 20%;
+    height: auto;
+
+}
+
+.opciones img:hover{
+
+    transform: scale(1.2);
+
+}
+
+#ganannegras{
+
+    padding: 1.2em;
+    background-color:white;
+    border-radius: 1em;
+    box-shadow: rgba(128, 128, 128, 0.76) 5px 5px 5px;
+
+    position: absolute;
+    left: 50%;
+    top: 15em;
+    transform: translate(-50%, 0);
+
+    display: none;
+}
+
+#ganannegras h3{
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 2em;
+
+}
+
+#gananblancas{
+
+    padding: 1.2em;
+    background-color:white;
+    border-radius: 1em;
+    box-shadow: rgba(128, 128, 128, 0.76) 5px 5px 5px;
+
+    position: absolute;
+    left: 50%;
+    top: 15em;
+    transform: translate(-50%, 0);
+
+    display: none;
+}
+
+#gananblancas h3{
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 2em;
+
+}
+
+.cuidado{
+
+    transition: all 0.5 ease;
+    background-color: rgb(209, 32, 32);
+
+}
+
+@media screen and (max-width: 1088px){
+
+    .square{
+
+        width: 65%;
+
+    }
+
+    .ventana h5{
+
+        font-size: 1.2em;
+
+    }
+
+    .ventana{
+
+        width: 40%;
+
+    }
+
+}
+
+@media screen and (max-width: 755px){
+
+    .square{
+
+        width: 80%;
+
+    }
+
+}
+
+@media screen and (max-width: 720px){
+
+    .ventana{
+
+        width: 60%;
+
+    }
+
+}
+
+@media screen and (max-width: 555px){
+
+    .square{
+
+        width: 90%;
+
+    }
+
+
+    .ventana{
+
+        width: 75%;
+
+    }
+
+}
+
+@media screen and (max-width: 385px){
+
+    .ventana{
+
+        width: 90%;
+
+    }
+
+}

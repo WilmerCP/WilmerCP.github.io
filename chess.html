@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess</title>
+    <link rel="stylesheet" href="chess.css">
+    <link rel="shortcut icon" href="imagenes/strategy.svg" type="image/x-icon">
+</head>
+<body>
+
+    <div class="square">
+    <div class="tablero">
+
+        <div class="a8 recuadro"><img src="imagenes/torrenegra.svg" alt="" class="pieza torrenegra negra" id="torrenegra1"></div>
+        <div class="b8 recuadro"><img src="imagenes/caballonegro.svg" alt="" class="pieza caballonegro negra" id="caballonegro1"></div>
+        <div class="c8 recuadro"><img src="imagenes/afilnegro.svg" alt="" class="pieza afilnegro negra" id="afilnegro1"></div>
+        <div class="d8 recuadro"><img src="imagenes/reinanegra.svg" alt="" class="pieza reinanegra negra" id="reinanegra"></div>
+        <div class="e8 recuadro"><img src="imagenes/reynegro.svg" alt="" class="pieza reynegro negra" id="reynegro"></div>
+        <div class="f8 recuadro"><img src="imagenes/afilnegro.svg" alt="" class="pieza afilnegro negra" id="afilnegro2"></div>
+        <div class="g8 recuadro"><img src="imagenes/caballonegro.svg" alt="" class="pieza caballonegro negra" id="caballonegro2"></div>
+        <div class="h8 recuadro"><img src="imagenes/torrenegra.svg" alt="" class="pieza torrenegra negra" id="torrenegra2"></div>
+
+        <div class="a7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro1"></div>
+        <div class="b7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro2"></div>
+        <div class="c7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro3"></div>
+        <div class="d7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro4"></div>
+        <div class="e7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro5"></div>
+        <div class="f7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro6"></div>
+        <div class="g7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro7"></div>
+        <div class="h7 recuadro"><img src="imagenes/peonnegro.svg" alt="" class="pieza peonnegro negra" id="peonnegro8"></div>
+
+        <div class="a6 recuadro"></div>
+        <div class="b6 recuadro"></div>
+        <div class="c6 recuadro"></div>
+        <div class="d6 recuadro"></div>
+        <div class="e6 recuadro"></div>
+        <div class="f6 recuadro"></div>
+        <div class="g6 recuadro"></div>
+        <div class="h6 recuadro"></div>
+
+        <div class="a5 recuadro"></div>
+        <div class="b5 recuadro"></div>
+        <div class="c5 recuadro"></div>
+        <div class="d5 recuadro"></div>
+        <div class="e5 recuadro"></div>
+        <div class="f5 recuadro"></div>
+        <div class="g5 recuadro"></div>
+        <div class="h5 recuadro"></div>
+
+        <div class="a4 recuadro"></div>
+        <div class="b4 recuadro"></div>
+        <div class="c4 recuadro"></div>
+        <div class="d4 recuadro"></div>
+        <div class="e4 recuadro"></div>
+        <div class="f4 recuadro"></div>
+        <div class="g4 recuadro"></div>
+        <div class="h4 recuadro"></div>
+
+        <div class="a3 recuadro"></div>
+        <div class="b3 recuadro"></div>
+        <div class="c3 recuadro"></div>
+        <div class="d3 recuadro"></div>
+        <div class="e3 recuadro"></div>
+        <div class="f3 recuadro"></div>
+        <div class="g3 recuadro"></div>
+        <div class="h3 recuadro"></div>
+
+        <div class="a2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco1"></div>
+        <div class="b2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco2"></div>
+        <div class="c2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco3"></div>
+        <div class="d2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco4"></div>
+        <div class="e2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco5"></div>
+        <div class="f2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco6"></div>
+        <div class="g2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco7"></div>
+        <div class="h2 recuadro"><img src="imagenes/peonblanco.svg" alt="" class="pieza peonblanco blanca" id="peonblanco8"></div>
+
+        <div class="a1 recuadro"><img src="imagenes/torreblanca.svg" alt="" class="pieza torreblanca blanca" id="torreblanca1"></div>
+        <div class="b1 recuadro"><img src="imagenes/caballoblanco.svg" alt="" class="pieza caballoblanco blanca" id="caballoblanco1"></div>
+        <div class="c1 recuadro"><img src="imagenes/afilblanco.svg" alt="" class="pieza afilblanco blanca" id="afilblanco1"></div>
+        <div class="d1 recuadro"><img src="imagenes/reinablanca.svg" alt="" class="pieza reinablanca blanca" id="reinablanca"></div>
+        <div class="e1 recuadro"><img src="imagenes/reyblanco.svg" alt="" class="pieza reyblanco blanca" id="reyblanco"></div>
+        <div class="f1 recuadro"><img src="imagenes/afilblanco.svg" alt="" class="pieza afilblanco blanca" id="afilblanco2"></div>
+        <div class="g1 recuadro"><img src="imagenes/caballoblanco.svg" alt="" class="pieza caballoblanco blanca" id="caballoblanco2"></div>
+        <div class="h1 recuadro"><img src="imagenes/torreblanca.svg" alt="" class="pieza torreblanca blanca" id="torreblanca2"></div>
+
+
+    </div>
+    </div>
+
+    <div class="overlay" id="opnegras">
+
+        <div class="ventana">
+            <h5>Seleccione una pieza</h5>
+        <div class="opciones">
+
+            <img src="imagenes/torrenegra.svg" id="eligetn">
+            <img src="imagenes/afilnegro.svg" id="eligean">
+            <img src="imagenes/caballonegro.svg" id="eligecn">
+            <img src="imagenes/reinanegra.svg" id="eligern">
+
+        </div>
+        </div>
+
+    </div>
+
+
+    <div class="overlay" id="opblancas">
+
+        <div class="ventana">
+            <h5>Seleccione una pieza</h5>
+        <div class="opciones">
+
+            <img src="imagenes/torreblanca.svg" id="eligetb">
+            <img src="imagenes/afilblanco.svg" id="eligeab">
+            <img src="imagenes/caballoblanco.svg" id="eligecb">
+            <img src="imagenes/reinablanca.svg" id="eligerb">
+
+        </div>
+        </div>
+
+    </div>
+
+    <div id="ganannegras">
+
+        <h3>Jaque mate, ganan las negras</h3>
+
+    </div>
+
+    <div id="gananblancas">
+
+        <h3>Jaque mate, ganan las blancas</h3>
+
+    </div>
+
+    <script src="chess.js"></script>
+</body>
+</html>
