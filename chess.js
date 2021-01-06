@@ -13,6 +13,11 @@ const reyblanco = document.getElementById("reyblanco");
 
 let turno = 1;
 
+/*Variables que te dicen de donde viene la amenaza al rey */
+
+let caminoAmenazaBlanco = [];
+let caminoAmenazaNegro = [];
+
 /*variables que contienen si se encuentra disponible o no el enroque*/
 
 let enroqueNL = true;
@@ -211,6 +216,8 @@ for(let i = 0; i<64; i++){
 
             turno++;
 
+            jaque();
+
         }
 
     });
@@ -225,35 +232,35 @@ function movimientoValido(tipopieza, origen, destino){
         if(tipopieza === "peonblanco"){
 
 
-            return movPeonBlanco(origen, destino);
+            return movPeonBlanco(origen, destino,false);
     
         }
 
         if(tipopieza === "torreblanca"){
 
 
-            return movTorre(origen, destino, "blanca");
+            return movTorre(origen, destino, "blanca",false);
     
         }
 
         if(tipopieza === "afilblanco"){
 
 
-            return movAfil(origen, destino, "blanca");
+            return movAfil(origen, destino, "blanca",false);
     
         }
 
         if(tipopieza === "reinablanca"){
 
 
-            return movReina(origen, destino, "blanca");
+            return movReina(origen, destino, "blanca",false);
     
         }
 
         if(tipopieza === "caballoblanco"){
 
 
-            return movCaballo(origen, destino, "blanca");
+            return movCaballo(origen, destino, "blanca",false);
     
         }
 
@@ -267,7 +274,7 @@ function movimientoValido(tipopieza, origen, destino){
 
             }
 
-            return movRey(origen, destino, "blanca");
+            return movRey(origen, destino, "blanca",false);
     
         }
 
@@ -275,35 +282,35 @@ function movimientoValido(tipopieza, origen, destino){
 
         if(tipopieza === "peonnegro"){
 
-            return movPeonNegro(origen, destino);
+            return movPeonNegro(origen, destino,false);
     
         }
 
         if(tipopieza === "torrenegra"){
 
 
-            return movTorre(origen, destino, "negra");
+            return movTorre(origen, destino, "negra",false);
     
         }
 
         if(tipopieza === "afilnegro"){
 
 
-            return movAfil(origen, destino, "negra");
+            return movAfil(origen, destino, "negra",false);
     
         }
 
         if(tipopieza === "reinanegra"){
 
 
-            return movReina(origen, destino, "negra");
+            return movReina(origen, destino, "negra",false);
     
         }
 
         if(tipopieza === "caballonegro"){
 
 
-            return movCaballo(origen, destino, "negra");
+            return movCaballo(origen, destino, "negra",false);
     
         }
 
@@ -317,7 +324,7 @@ function movimientoValido(tipopieza, origen, destino){
 
             }
 
-            return movRey(origen, destino, "negra");
+            return movRey(origen, destino, "negra",false);
     
         }
     }
@@ -332,14 +339,23 @@ function estaVacio(recuadro){
 
 //Funcion que devuelve true or false dependiendo si se puede comer la pieza
 
-function sePuedeComer(color, recuadro){ 
+function sePuedeComer(color, recuadro, prueba){ 
 
     let respuesta = document.getElementsByClassName(recuadro)[0].firstElementChild.classList[2] != color;
 
 
     if (respuesta === true){
-        comer(recuadro);
-        return true;
+        
+        if(prueba){
+        
+            return true;
+
+        }else{
+
+            comer(recuadro);
+            return true;
+        }
+
     }else{
 
         return false;
@@ -353,6 +369,18 @@ function comer(posicion){
 
     const lugar = document.getElementsByClassName(posicion)[0];
     const victima = lugar.firstElementChild;
+    const colorVictima = victima.classList[3];
+
+    if(colorVictima === "blanca"){
+
+        blancas.splice(blancas.indexOf(victima),1);
+
+    }else{
+
+        negras.splice(negras.indexOf(victima),1);
+
+    }
+
     lugar.removeChild(victima);
 
 }
@@ -361,7 +389,7 @@ function comer(posicion){
 //Funcion que recorre la ruta norte, es decir cuando una pieza va de abajo hacia arriba.
 //Devuelve true o false dependiendo si el movimiento coincide.
 
-function rutaNorte(origen,destino,color){
+function rutaNorte(origen,destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -394,7 +422,7 @@ function rutaNorte(origen,destino,color){
                     //en caso de que encuentre en el camino a su destino una pieza atravesada, no podra hacer el movimiento
                     case numerod:
 
-                        return sePuedeComer(color,destino);
+                        return sePuedeComer(color,destino,prueba);
 
                     break;
 
@@ -418,7 +446,7 @@ function rutaNorte(origen,destino,color){
 //Funcion que recorre la ruta sur, es decir cuando una pieza va de arriba hacia abajo.
 //Devuelve true o false dependiendo si el movimiento coincide.
 
-function rutaSur(origen,destino,color){
+function rutaSur(origen,destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -451,7 +479,7 @@ function rutaSur(origen,destino,color){
                     //en caso de que encuentre en el camino a su destino una pieza atravesada, no podra hacer el movimiento
                     case numerod:
 
-                        return sePuedeComer(color,destino);
+                        return sePuedeComer(color,destino,prueba);
 
                     break;
 
@@ -475,7 +503,7 @@ function rutaSur(origen,destino,color){
 //Funcion que recorre la ruta este, es decir cuando una pieza va de izquierda a derecha.
 //Devuelve true o false dependiendo si el movimiento coincide.
 
-function rutaEste(origen,destino,color){
+function rutaEste(origen,destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -507,7 +535,7 @@ function rutaEste(origen,destino,color){
                     //en caso de que encuentre en el camino a su destino una pieza atravesada, no podra hacer el movimiento
                     case equivale(letrad):
 
-                        return sePuedeComer(color,destino);
+                        return sePuedeComer(color,destino,prueba);
 
                     break;
 
@@ -531,7 +559,7 @@ function rutaEste(origen,destino,color){
 //Funcion que recorre la ruta oeste, es decir cuando una pieza va de derecha a izquierda.
 //Devuelve true o false dependiendo si el movimiento coincide.
 
-function rutaOeste(origen,destino,color){
+function rutaOeste(origen,destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -564,7 +592,7 @@ function rutaOeste(origen,destino,color){
                     //en caso de que encuentre en el camino a su destino una pieza atravesada, no podra hacer el movimiento
                     case equivale(letrad):
 
-                        return sePuedeComer(color,destino);
+                        return sePuedeComer(color,destino,prueba);
 
                     break;
 
@@ -589,7 +617,7 @@ function rutaOeste(origen,destino,color){
 //Función que recorre la ruta en diagonal al noreste, devuelve si el movimiento cumple esa ruta.
 //Es usada por la funcion movAfil y movReina.
 
-function rutaNoreste(origen, destino,color){
+function rutaNoreste(origen, destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -617,7 +645,7 @@ function rutaNoreste(origen, destino,color){
 
                 case destino:
 
-                return sePuedeComer(color,destino);
+                return sePuedeComer(color,destino,prueba);
 
                 break;
 
@@ -648,7 +676,7 @@ function rutaNoreste(origen, destino,color){
 //Función que recorre la ruta en diagonal al sureste, devuelve si el movimiento cumple esa ruta.
 //Es usada por la funcion movAfil y movReina.
 
-function rutaSureste(origen, destino,color){
+function rutaSureste(origen, destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -675,7 +703,7 @@ function rutaSureste(origen, destino,color){
 
                 case destino:
 
-                return sePuedeComer(color,destino);
+                return sePuedeComer(color,destino,prueba);
 
                 break;
 
@@ -702,7 +730,7 @@ function rutaSureste(origen, destino,color){
 //Función que recorre la ruta en diagonal al noroeste, devuelve si el movimiento cumple esa ruta.
 //Es usada por la funcion movAfil y movReina.
 
-function rutaNoroeste(origen, destino,color){
+function rutaNoroeste(origen, destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -729,7 +757,7 @@ function rutaNoroeste(origen, destino,color){
 
                 case destino:
 
-                return sePuedeComer(color,destino);
+                return sePuedeComer(color,destino,prueba);
 
                 break;
 
@@ -760,7 +788,7 @@ function rutaNoroeste(origen, destino,color){
 //Función que recorre la ruta en diagonal al suroeste, devuelve si el movimiento cumple esa ruta.
 //Es usada por la funcion movAfil y movReina.
 
-function rutaSuroeste(origen, destino,color){
+function rutaSuroeste(origen, destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -787,7 +815,7 @@ function rutaSuroeste(origen, destino,color){
 
                 case destino:
 
-                return sePuedeComer(color,destino);
+                return sePuedeComer(color,destino,prueba);
 
                 break;
 
@@ -817,7 +845,7 @@ function rutaSuroeste(origen, destino,color){
 
 //Funcion que calcula los movimientos posibles de una torre y devuelve verdadero o falso si coincide con lo que se intenta hacer
 
-function movTorre(origen,destino,color){
+function movTorre(origen,destino,color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -830,19 +858,19 @@ function movTorre(origen,destino,color){
 
         switch(true){
 
-            case rutaNorte(origen,destino,color):
+            case rutaNorte(origen,destino,color,prueba):
                 return true;
             break;
 
-            case rutaSur(origen,destino,color):
+            case rutaSur(origen,destino,color,prueba):
                 return true;
             break;
 
-            case rutaEste(origen,destino,color):
+            case rutaEste(origen,destino,color,prueba):
                 return true;
             break;
 
-            case rutaOeste(origen,destino,color):
+            case rutaOeste(origen,destino,color,prueba):
                 return true;
             break;
 
@@ -854,7 +882,7 @@ function movTorre(origen,destino,color){
 
 //Funcion que revisa los movimientos posibles de un afil devuelve si coincide con lo que se intenta hacer
 
-function movAfil(origen, destino, color){
+function movAfil(origen, destino, color,prueba){
 
     //Si no se mueve en lineas diagonales, no es válido
     //Llamamos a las diferentes funciones que revisan posibles rutas 
@@ -885,7 +913,7 @@ function movAfil(origen, destino, color){
 
 //Funcion que revisa los movimientos posibles de una reina devuelve si coincide con lo que se intenta hacer
 
-function movReina(origen, destino, color){
+function movReina(origen, destino, color,prueba){
 
     //Si no se mueve en lineas rectas, no es válido
     //Llamamos a las diferentes funciones que revisan posibles rutas 
@@ -933,7 +961,7 @@ function movReina(origen, destino, color){
 
 //Funcion que calcula los movimientos posibles del peon negro y devuelve si coincide con lo que se intenta hacer
 
-function movPeonNegro(origen, destino){
+function movPeonNegro(origen, destino,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -972,7 +1000,7 @@ function movPeonNegro(origen, destino){
 
             if (estaVacio(destino) === false){
 
-                return sePuedeComer("negra", destino);
+                return sePuedeComer("negra", destino,prueba);
 
             }        
 
@@ -984,7 +1012,7 @@ function movPeonNegro(origen, destino){
 
 //funcion que calcula los movimientos posibles del peon blanco y devuelve si coincide con lo que se intenta hacer
 
-function movPeonBlanco(origen, destino){
+function movPeonBlanco(origen, destino,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -1023,7 +1051,7 @@ function movPeonBlanco(origen, destino){
 
             if (estaVacio(destino) === false){
 
-                return sePuedeComer("blanca", destino);
+                return sePuedeComer("blanca", destino,prueba);
 
             }        
 
@@ -1035,7 +1063,7 @@ function movPeonBlanco(origen, destino){
 
 //funcion que calcula los movimientos posibles del caballo y devuelve si coincide con lo que se intenta hacer
 
-function movCaballo(origen, destino, color){
+function movCaballo(origen, destino, color,prueba){
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -1062,7 +1090,7 @@ function movCaballo(origen, destino, color){
 
         } else{
 
-            return sePuedeComer(color,destino);
+            return sePuedeComer(color,destino,prueba);
 
         }
         
@@ -1113,7 +1141,7 @@ function movRey(origen, destino, color){
     
             }else{
     
-                return sePuedeComer(color,destino);
+                return sePuedeComer(color,destino,prueba);
     
             }
             
@@ -1257,7 +1285,6 @@ function amenazaPeonNegro(recuadro){
             if(document.getElementsByClassName(b)[0].firstChild != null){
     
                 if(document.getElementsByClassName(b)[0].firstChild.classList[1] === "peonnegro"){
-                
 
                     return true;
 
@@ -1332,7 +1359,7 @@ function amenazaPeonBlanco(recuadro){
             if(document.getElementsByClassName(a)[0].firstChild != null){
     
                 if(document.getElementsByClassName(a)[0].firstChild.classList[1] === "peonblanco"){
-    
+
                     return true;
     
                 }
@@ -2054,16 +2081,23 @@ function enrocable(color){
                 }
         }
 
+        if(document.getElementsByClassName("a8")[0].firstChild != null){
 
-        if(document.getElementsByClassName("a8")[0].firstChild.classList[1] === "torrenegra" && izq === true){
+            if(document.getElementsByClassName("a8")[0].firstChild.classList[1] === "torrenegra" && izq === true && amenaza("c8","negra") === false){
 
-            return true;
+                return true;
+    
+            }
 
         }
 
-        if(document.getElementsByClassName("h8")[0].firstChild.classList[1] === "torrenegra" && der === true){
+        if(document.getElementsByClassName("h8")[0].firstChild != null){
 
-            return true;
+            if(document.getElementsByClassName("h8")[0].firstChild.classList[1] === "torrenegra" && der === true && amenaza("g8","negra") === false){
+
+                return true;
+
+            }
 
         }
 
@@ -2125,15 +2159,23 @@ function enrocable(color){
                 }
         }
 
-        if(document.getElementsByClassName("a1")[0].firstChild.classList[1] === "torreblanca" && izq === true){
+        if(document.getElementsByClassName("a1")[0].firstChild != null){
 
-            return true;
+            if(document.getElementsByClassName("a1")[0].firstChild.classList[1] === "torreblanca" && izq === true  && amenaza("c1","blanca") === false){
+
+                return true;
+
+            }
 
         }
 
-        if(document.getElementsByClassName("h1")[0].firstChild.classList[1] === "torreblanca" && der === true){
+        if(document.getElementsByClassName("h1")[0].firstChild != null){
 
-            return true;
+            if(document.getElementsByClassName("h1")[0].firstChild.classList[1] === "torreblanca" && der === true  && amenaza("g1","blanca") === false){
+
+                return true;
+
+            }
 
         }
 
@@ -2175,7 +2217,7 @@ function enrocar(destino, color){
 
                         default:
 
-                            if(enroqueNL){
+                            if(enroqueNL && amenaza("c8","negra") === false){
 
                                 let caetorre = document.getElementsByClassName("d8")[0]
 
@@ -2211,7 +2253,7 @@ function enrocar(destino, color){
 
                         default:
 
-                            if(enroqueNC){
+                            if(enroqueNC && amenaza("g8","negra") === false){
 
                                 let caetorre = document.getElementsByClassName("f8")[0]
 
@@ -2261,7 +2303,7 @@ function enrocar(destino, color){
 
                         default:
 
-                            if(enroqueBL){
+                            if(enroqueBL  && amenaza("c1","blanca") === false){
 
                                 let caetorre = document.getElementsByClassName("d1")[0]
 
@@ -2297,7 +2339,7 @@ function enrocar(destino, color){
 
                         default:
 
-                            if(enroqueBC){
+                            if(enroqueBC  && amenaza("g1","blanca") === false){
 
                                 let caetorre = document.getElementsByClassName("f1")[0]
 
@@ -2321,3 +2363,195 @@ function enrocar(destino, color){
 
 }
 
+
+/*funcion que te dice el id de la pieza que te puede comer, solo te devuelve una sola pieza ya que esta pensado para usarse con el rey*/
+
+function quienMeAtaca(recuadro, color){
+
+    let atacante = "";
+    let posicionAtacante = "";
+    let tipoAtacante = "";
+
+    if(color === "blanca"){
+
+        for (let index = 0; index < negras.length; index++) {
+            
+            tipoAtacante = negras[index].classList[1];
+            posicionAtacante = negras[index].parentNode.classList[0];
+
+            switch(tipoAtacante){
+
+                case "peonnegro":
+
+                    if(movPeonNegro(posicionAtacante,recuadro,true)){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+                case "caballonegro":
+
+                    if(movCaballo(posicionAtacante,recuadro,"negra",true) ){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+                case "torrenegra":
+
+                    if(movTorre(posicionAtacante,recuadro,"negra",true) ){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+                case "reinanegra":
+
+                    if(movReina(posicionAtacante,recuadro,"negra",true) ){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+                case "afilnegro":
+
+                    if(movAfil(posicionAtacante,recuadro,"negra",true) ){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+                case "reynegro":
+
+                    if(movRey(posicionAtacante,recuadro,"negra",true) ){
+
+                        atacante = negras[index].id;
+
+                    }
+
+                break;
+
+            }
+            
+        }     
+
+
+    }else{ //pieza negra
+
+        for (let index = 0; index < blancas.length; index++) {
+
+            tipoAtacante = blancas[index].classList[1];
+            posicionAtacante = blancas[index].parentNode.classList[0];
+
+            switch(tipoAtacante){
+
+                case "peonblanco":
+
+                    if(movPeonBlanco(posicionAtacante,recuadro,true)){
+
+                        atacante = blancas[index].id;
+                        index = 100;
+
+                    }
+
+                break;
+
+                case "caballoblanco":
+
+                    if(movCaballo(posicionAtacante,recuadro,"blanca",true) ){
+
+                        atacante = blancas[index].id;
+
+                    }
+
+                break;
+
+                case "torreblanca":
+
+                    if(movTorre(posicionAtacante,recuadro,"blanca",true) ){
+
+                        atacante = blancas[index].id;
+
+                    }
+
+                break;
+
+                case "reinablanca":
+
+                    if(movReina(posicionAtacante,recuadro,"blanca",true) ){
+
+                        atacante = blancas[index].id;
+
+                    }
+
+                break;
+
+                case "afilblanco":
+
+                    if(movAfil(posicionAtacante,recuadro,"blanca",true) ){
+
+                        atacante = blancas[index].id;
+
+                    }
+
+                break;
+
+                case "reyblanco":
+
+                    if(movRey(posicionAtacante,recuadro,"blanca",true) ){
+
+                        atacante = blancas[index].id;
+
+                    }
+
+                break;
+
+            }
+            
+        }
+
+
+    }
+
+    return atacante;
+
+}
+
+/*Funcion que se encarga de la mecanica de jaque*/
+
+function jaque(){
+
+    //Rey negro
+    if(amenaza(reynegro.parentNode.classList[0],"negra")){
+
+        negroenjaque = true;
+
+    }else{
+
+        negroenjaque = false;
+
+    }
+
+    //Rey negro
+    if(amenaza(reyblanco.parentNode.classList[0],"blanca")){
+
+        blancoenjaque = true;
+
+    }else{
+
+        blancoenjaque = false;
+
+    }
+
+
+}
