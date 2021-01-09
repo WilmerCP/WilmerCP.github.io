@@ -1,7 +1,14 @@
-
 /*Obtenemos todas las piezas en un array*/
 
 const piezas = Array.from(document.getElementsByClassName("pieza"));
+
+for (let index = 0; index < piezas.length; index++) {
+    
+    piezas[index].anterior = piezas[index].parentNode;
+    piezas[index].indice = index;
+    
+}
+
 const negras = piezas.slice(0,16);
 const blancas = piezas.slice(16,32);
 
@@ -13,10 +20,6 @@ const reyblanco = document.getElementById("reyblanco");
 
 let turno = 1;
 
-/*Variables que te dicen de donde viene la amenaza al rey */
-
-let caminoAmenazaBlanco = [];
-let caminoAmenazaNegro = [];
 
 /*variables que contienen si se encuentra disponible o no el enroque*/
 
@@ -29,6 +32,9 @@ let enroqueBC = true;
 
 let negroenjaque = false;
 let blancoenjaque = false;
+
+/*Para saber si se comieron una pieza en ese turno o no*/
+let asesinato = false;
 
 /*En el evento de arrastrar de cada pieza guardamos el id de la pieza que esta siendo arrastrada */
 for(let i = 0; i<32; i++){
@@ -168,56 +174,77 @@ for(let i = 0; i<64; i++){
 
             recuadros[i].appendChild(piezaarrastrada);
 
-            if(tipopieza === "peonnegro" || tipopieza === "peonblanco"){
-                convertirPieza(destino, piezaarrastrada, tipopieza);
-            }
-
-            switch(idpieza){ //Si alguna de estas piezas se mueve ya no se puede enrocar
-
-                case "torrenegra1":
-
-                    enroqueNL = false;
-
-                break;
-
-                case "torrenegra2":
-
-                    enroqueNC = false;
-
-                break;
-
-                case "torreblanca1":
-
-                    enroqueBL = false;
-
-                break;
-
-                case "torreblanca2":
-
-                    enroqueBC = false;
-
-                break;
-
-                case "reynegro":
-
-                    enroqueNL = false;
-                    enroqueNC = false;
-
-                break;
-
-                case "reyblanco":
-
-                    enroqueBC = false;
-                    enroqueBL = false;
-                
-                break;
-            }
-
-
-            turno++;
-
             jaque();
 
+            if(turno%2 != 0 && blancoenjaque === true ||turno%2 === 0 && negroenjaque === true){ //Si era el turno de las blancas, y el rey blanco esta en jaque, se devuelve la pieza 
+
+              piezaarrastrada.anterior.appendChild(piezaarrastrada);       
+
+              if(asesinato === true){
+
+                revivir(destino);
+
+              }
+ 
+              asesinato = false;
+            
+  
+            }else{
+
+                piezaarrastrada.anterior = recuadros[i];
+
+                if(tipopieza === "peonnegro" || tipopieza === "peonblanco"){
+                    convertirPieza(destino, piezaarrastrada, tipopieza);
+                }
+
+
+                switch(idpieza){ //Si alguna de estas piezas se mueve ya no se puede enrocar
+
+                    case "torrenegra1":
+
+                        enroqueNL = false;
+
+                    break;
+
+                    case "torrenegra2":
+
+                        enroqueNC = false;
+
+                    break;
+
+                    case "torreblanca1":
+
+                        enroqueBL = false;
+
+                    break;
+
+                    case "torreblanca2":
+
+                        enroqueBC = false;
+
+                    break;
+
+                    case "reynegro":
+
+                        enroqueNL = false;
+                        enroqueNC = false;
+
+                    break;
+
+                    case "reyblanco":
+
+                        enroqueBC = false;
+                        enroqueBL = false;
+                
+                    break;
+                }
+
+                jaque();
+
+                turno++;
+                asesinato = false;
+                jaqueMate();
+            }
         }
 
     });
@@ -371,6 +398,8 @@ function comer(posicion){
     const victima = lugar.firstElementChild;
     const colorVictima = victima.classList[3];
 
+    lugar.ultimoMuerto = victima;
+
     if(colorVictima === "blanca"){
 
         blancas.splice(blancas.indexOf(victima),1);
@@ -382,6 +411,30 @@ function comer(posicion){
     }
 
     lugar.removeChild(victima);
+    asesinato = true;
+
+}
+
+/*Revivir una pieza que se comio ilegalmente */
+
+function revivir(posicion){
+
+    const lugar = document.getElementsByClassName(posicion)[0];
+    const victima = lugar.ultimoMuerto;
+    const colorVictima = victima.classList[3];
+
+    if(colorVictima === "blanca"){
+
+        blancas.splice(victima.indice,0,victima);
+
+    }else{
+
+        negras.splice(victima.indice,0,victima);
+
+    }
+
+    lugar.appendChild(victima);
+
 
 }
 
@@ -428,7 +481,21 @@ function rutaNorte(origen,destino,color,prueba){
 
                     default:
 
-                        return false;
+                        if(prueba === true){
+
+                            if(color === "blanca" && document.getElementsByClassName(letrao+indice)[0].firstChild.classList[1] != "reynegro"){
+
+                                return false;
+                            }else if(color === "negra" && document.getElementsByClassName(letrao+indice)[0].firstChild.classList[1] != "reyblanco"){
+
+                                return false;
+                            }
+                            
+
+                        }else{
+                            return false;
+                        }
+
 
                 }
             }else{
@@ -625,6 +692,8 @@ function rutaNoreste(origen, destino,color,prueba){
     const numeroo = Number(origen.charAt(1));
     const letrad = destino.charAt(0);
     const numerod = Number(destino.charAt(1));
+
+
 
     //Si la ruta es hacia el noreste, entonces la letra y el num deben haber aumentado en la misma proporción.
     //Se va a ir recorriendo cada casilla, si hay alguna pieza, se revisa si es igual al destino.
@@ -889,19 +958,19 @@ function movAfil(origen, destino, color,prueba){
 
     switch(true){
 
-        case rutaNoreste(origen,destino,color):
+        case rutaNoreste(origen,destino,color,prueba):
             return true;
         break;
 
-        case rutaSureste(origen,destino,color):
+        case rutaSureste(origen,destino,color,prueba):
             return true;
         break;
 
-        case rutaNoroeste(origen,destino,color):
+        case rutaNoroeste(origen,destino,color,prueba):
             return true;
         break;
 
-        case rutaSuroeste(origen,destino,color):
+        case rutaSuroeste(origen,destino,color,prueba):
             return true;
         break;
 
@@ -920,35 +989,43 @@ function movReina(origen, destino, color,prueba){
 
     switch(true){
 
-        case rutaNoreste(origen,destino,color):
+        case rutaNoreste(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaSureste(origen,destino,color):
+        case rutaSureste(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaNoroeste(origen,destino,color):
+        case rutaNoroeste(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaSuroeste(origen,destino,color):
+        case rutaSuroeste(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaNorte(origen,destino,color):
+        case rutaNorte(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaSur(origen,destino,color):
+        case rutaSur(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaEste(origen,destino,color):
+        case rutaEste(origen,destino,color,prueba):
+
             return true;
         break;
 
-        case rutaOeste(origen,destino,color):
+        case rutaOeste(origen,destino,color,prueba):
+
             return true;
         break;
 
@@ -982,6 +1059,12 @@ function movPeonNegro(origen, destino,prueba){
 
         if(letrao === letrad && numerod === numeroo - 1){
 
+            if(prueba === true){
+
+                return false;
+
+            }
+
             return estaVacio(destino);        
 
         }
@@ -990,13 +1073,19 @@ function movPeonNegro(origen, destino,prueba){
 
         if(numeroo === 7 && letrao === letrad && numerod === numeroo - 2){
 
+            if(prueba === true){
+
+                return false;
+
+            }
+
             return estaVacio(destino);        
 
         }
 
         //cuando se va a comer una pieza
 
-        if(equivale(letrad) === equivale(letrao)-1  || equivale(letrad) === equivale(letrao)+1 ){
+        if(equivale(letrad) === equivale(letrao)-1  && numerod+1 === numeroo || equivale(letrad) === equivale(letrao)+1  && numerod+1 === numeroo ){
 
             if (estaVacio(destino) === false){
 
@@ -1013,6 +1102,7 @@ function movPeonNegro(origen, destino,prueba){
 //funcion que calcula los movimientos posibles del peon blanco y devuelve si coincide con lo que se intenta hacer
 
 function movPeonBlanco(origen, destino,prueba){
+
 
     //obtenemos las letras y numeros de las posiciones por separado
 
@@ -1033,13 +1123,26 @@ function movPeonBlanco(origen, destino,prueba){
 
         if(letrao === letrad && numerod === numeroo + 1){
 
+
+            if(prueba === true){
+
+                return false;
+
+            }
+
             return estaVacio(destino);        
 
         }
 
         //cuando se hace un movimiento doble hacia adelante como primer movimiento del peon
 
-        if(numeroo === 2 && letrao === letrad && numerod === numeroo + 2){
+        if(numeroo === 2 && letrao === letrad && numerod === 4){
+
+            if(prueba === true){
+
+                return false;
+
+            }
 
             return estaVacio(destino);        
 
@@ -1047,7 +1150,7 @@ function movPeonBlanco(origen, destino,prueba){
 
         //cuando se va a comer una pieza
 
-        if(equivale(letrad) === equivale(letrao)+1  || equivale(letrad) === equivale(letrao)-1 ){
+        if(equivale(letrad) === equivale(letrao)-1  && numerod-1 === numeroo || equivale(letrad) === equivale(letrao)+1  && numerod-1 === numeroo ){
 
             if (estaVacio(destino) === false){
 
@@ -1097,55 +1200,6 @@ function movCaballo(origen, destino, color,prueba){
     }else{
 
         return false;
-
-    }
-
-}
-
-//funcion que calcula los movimientos posibles del rey y devuelve si coincide con lo que se intenta hacer
-
-function movRey(origen, destino, color){
-
-    //obtenemos las letras y numeros de las posiciones por separado
-
-    const letrao = origen.charAt(0);
-    const numeroo = Number(origen.charAt(1));
-    const letrad = destino.charAt(0);
-    const numerod = Number(destino.charAt(1));
-
-    //Calculamos el valor absoluto de la distancia en Y y en X
-
-    let difY = numerod - numeroo;
-    if(difY<0){ difY=difY*-1}
-
-    let difX = equivale(letrad) - equivale(letrao);
-    if(difX<0){ difX=difX*-1}
-
-    let suma = difX + difY;
-
-    if(difX > 1 || difY > 1){
-
-        return false
-
-    }else{
-
-        if(amenaza(destino,color)){
-
-            return false;
-
-        }else{
-
-            if(estaVacio(destino)){
-
-                return true;
-    
-            }else{
-    
-                return sePuedeComer(color,destino,prueba);
-    
-            }
-            
-        }
 
     }
 
@@ -1454,6 +1508,35 @@ function amenazaTorre(recuadro){
 function amenazaTorreNegra(recuadro){
 
     let direcciones = amenazaTorre(recuadro);
+
+        switch("reyblanco"){
+
+            case direcciones[0][0]:
+
+                direcciones[0].splice(0,1);
+
+            break;
+
+            case direcciones[1][0]:
+
+                direcciones[1].splice(0,1);
+
+            break;
+    
+            case direcciones[2][0]:
+
+                direcciones[2].splice(0,1);
+
+            break;
+
+            case direcciones[3][0]:
+
+                direcciones[3].splice(0,1);
+
+            break;
+
+    }
+
  
     //si el primer elemento en el camino es una reinanegra o una torrenegra, entonces si hay amenaza
 
@@ -1476,11 +1559,41 @@ function amenazaTorreNegra(recuadro){
 
 //Funcion que recibe un recuadro, y devuelve si este se encuentra amenzado o no por una torre blanca o una reina blanca
 
-function amenazaTorreBlanca(recuadro){
+function amenazaTorreBlanca(recuadro, rey){
 
     let direcciones = amenazaTorre(recuadro);
 
- 
+    //si estamos trabajando con recuadros adyacentes al rey negro, ignoramos su posicion en el tablero.
+
+        switch("reynegro"){
+
+            case direcciones[0][0]:
+
+                direcciones[0].splice(0,1);
+
+            break;
+
+            case direcciones[1][0]:
+
+                direcciones[1].splice(0,1);
+
+            break;
+    
+            case direcciones[2][0]:
+
+                direcciones[2].splice(0,1);
+
+            break;
+
+            case direcciones[3][0]:
+
+                direcciones[3].splice(0,1);
+
+            break;
+
+        }
+    
+
     //si el primer elemento en el camino es una reinablanca o una torreblanca, entonces si hay amenaza
 
     if(direcciones[0][0] === "reinablanca" || direcciones[1][0] === "reinablanca" || direcciones[2][0] === "reinablanca" || direcciones[3][0] === "reinablanca"){
@@ -1588,6 +1701,36 @@ function amenazaAfil(recuadro){
 function amenazaAfilBlanco(recuadro){
 
     let direcciones = amenazaAfil(recuadro);
+
+    //si estamos trabajando con recuadros adyacentes al rey negro, ignoramos su posicion en el tablero.
+
+        switch("reynegro"){
+
+            case direcciones[0][0]:
+
+                direcciones[0].splice(0,1);
+
+            break;
+
+            case direcciones[1][0]:
+
+                direcciones[1].splice(0,1);
+
+            break;
+    
+            case direcciones[2][0]:
+
+                direcciones[2].splice(0,1);
+
+            break;
+
+            case direcciones[3][0]:
+
+                direcciones[3].splice(0,1);
+
+            break;
+
+        }
  
     //si el primer elemento en el camino es una reinablanca o una afilblanco, entonces si hay amenaza
 
@@ -1612,6 +1755,38 @@ function amenazaAfilBlanco(recuadro){
 function amenazaAfilNegro(recuadro){
 
     let direcciones = amenazaAfil(recuadro);
+
+    //si estamos trabajando con recuadros adyacentes al rey blanco, ignoramos su posicion en el tablero.
+
+
+        switch("reyblanco"){
+
+            case direcciones[0][0]:
+
+                direcciones[0].splice(0,1);
+
+            break;
+
+            case direcciones[1][0]:
+
+                direcciones[1].splice(0,1);
+
+            break;
+    
+            case direcciones[2][0]:
+
+                direcciones[2].splice(0,1);
+
+            break;
+
+            case direcciones[3][0]:
+
+                direcciones[3].splice(0,1);
+
+            break;
+
+        }
+
 
     //si el primer elemento en el camino es una reinablanca o una afilblanco, entonces si hay amenaza
 
@@ -2020,170 +2195,6 @@ function amenaza(recuadro, color){
 
 }
 
-/*Permite saber si es posible enrocar al rey, sin embargo de momento no la he usado*/
-
-function enrocable(color){
-
-    let izq = true;
-    let der = true;
-
-    if(color === "negro"){
-
-        switch(false){
-
-            case estaVacio("b8"):
-
-                izq = false;
-
-            break;
-
-            case estaVacio("c8"):
-                
-                izq = false;
-
-            break;
-
-            case estaVacio("d8"):
-
-                izq = false;
-
-            break;
-
-            default:
-
-                if(enroqueNL){
-
-                    izq = true;
-
-                }
-        }
-
-        switch(false){
-
-            case estaVacio("g8"):
-                
-                der = false;
-
-            break;
-
-            case estaVacio("f8"):
-
-                der = false;
-
-            break;
-
-            default:
-
-                if(enroqueNC){
-
-                    der = true;
-
-                }
-        }
-
-        if(document.getElementsByClassName("a8")[0].firstChild != null){
-
-            if(document.getElementsByClassName("a8")[0].firstChild.classList[1] === "torrenegra" && izq === true && amenaza("c8","negra") === false){
-
-                return true;
-    
-            }
-
-        }
-
-        if(document.getElementsByClassName("h8")[0].firstChild != null){
-
-            if(document.getElementsByClassName("h8")[0].firstChild.classList[1] === "torrenegra" && der === true && amenaza("g8","negra") === false){
-
-                return true;
-
-            }
-
-        }
-
-        return false;
-
-    }
-
-    if(color === "blanco"){
-
-        switch(false){
-
-            case estaVacio("b1"):
-
-                izq = false;
-
-            break;
-
-            case estaVacio("c1"):
-                
-                izq = false;
-
-            break;
-
-            case estaVacio("d1"):
-
-                izq = false;
-
-            break;
-
-            default:
-
-                if(enroqueBL){
-
-                    izq = true;
-
-                }
-        }
-
-        switch(false){
-
-            case estaVacio("g1"):
-                
-                der = false;
-
-            break;
-
-            case estaVacio("f1"):
-
-                der = false;
-
-            break;
-
-            default:
-
-                if(enroqueBC){
-
-                    der = true;
-
-                }
-        }
-
-        if(document.getElementsByClassName("a1")[0].firstChild != null){
-
-            if(document.getElementsByClassName("a1")[0].firstChild.classList[1] === "torreblanca" && izq === true  && amenaza("c1","blanca") === false){
-
-                return true;
-
-            }
-
-        }
-
-        if(document.getElementsByClassName("h1")[0].firstChild != null){
-
-            if(document.getElementsByClassName("h1")[0].firstChild.classList[1] === "torreblanca" && der === true  && amenaza("g1","blanca") === false){
-
-                return true;
-
-            }
-
-        }
-
-        return false;
-
-    }
-
-}
 
 /*Comprueba si es posible realizar el enroque que se intenta y lo ejecuta */
 
@@ -2363,175 +2374,210 @@ function enrocar(destino, color){
 
 }
 
+/*Devuelve si es posible que el rey ejecute x movimiento */
 
-/*funcion que te dice el id de la pieza que te puede comer, solo te devuelve una sola pieza ya que esta pensado para usarse con el rey*/
+function movRey(origen, destino, color, prueba){
 
-function quienMeAtaca(recuadro, color){
+    let adyacentes = vecinos(origen);
 
-    let atacante = "";
-    let posicionAtacante = "";
-    let tipoAtacante = "";
+    if(adyacentes.includes(destino) === false){
 
-    if(color === "blanca"){
+        return false;
 
-        for (let index = 0; index < negras.length; index++) {
-            
-            tipoAtacante = negras[index].classList[1];
-            posicionAtacante = negras[index].parentNode.classList[0];
+    }else{
 
-            switch(tipoAtacante){
+        if(amenaza(destino,color)){
 
-                case "peonnegro":
+            return false;
 
-                    if(movPeonNegro(posicionAtacante,recuadro,true)){
+        }else{
 
-                        atacante = negras[index].id;
+            if(estaVacio(destino)){
 
-                    }
+                return true;
 
-                break;
+            }else{
 
-                case "caballonegro":
-
-                    if(movCaballo(posicionAtacante,recuadro,"negra",true) ){
-
-                        atacante = negras[index].id;
-
-                    }
-
-                break;
-
-                case "torrenegra":
-
-                    if(movTorre(posicionAtacante,recuadro,"negra",true) ){
-
-                        atacante = negras[index].id;
-
-                    }
-
-                break;
-
-                case "reinanegra":
-
-                    if(movReina(posicionAtacante,recuadro,"negra",true) ){
-
-                        atacante = negras[index].id;
-
-                    }
-
-                break;
-
-                case "afilnegro":
-
-                    if(movAfil(posicionAtacante,recuadro,"negra",true) ){
-
-                        atacante = negras[index].id;
-
-                    }
-
-                break;
-
-                case "reynegro":
-
-                    if(movRey(posicionAtacante,recuadro,"negra",true) ){
-
-                        atacante = negras[index].id;
-
-                    }
-
-                break;
+                return sePuedeComer(color,destino,prueba);
 
             }
-            
-        }     
 
-
-    }else{ //pieza negra
-
-        for (let index = 0; index < blancas.length; index++) {
-
-            tipoAtacante = blancas[index].classList[1];
-            posicionAtacante = blancas[index].parentNode.classList[0];
-
-            switch(tipoAtacante){
-
-                case "peonblanco":
-
-                    if(movPeonBlanco(posicionAtacante,recuadro,true)){
-
-                        atacante = blancas[index].id;
-                        index = 100;
-
-                    }
-
-                break;
-
-                case "caballoblanco":
-
-                    if(movCaballo(posicionAtacante,recuadro,"blanca",true) ){
-
-                        atacante = blancas[index].id;
-
-                    }
-
-                break;
-
-                case "torreblanca":
-
-                    if(movTorre(posicionAtacante,recuadro,"blanca",true) ){
-
-                        atacante = blancas[index].id;
-
-                    }
-
-                break;
-
-                case "reinablanca":
-
-                    if(movReina(posicionAtacante,recuadro,"blanca",true) ){
-
-                        atacante = blancas[index].id;
-
-                    }
-
-                break;
-
-                case "afilblanco":
-
-                    if(movAfil(posicionAtacante,recuadro,"blanca",true) ){
-
-                        atacante = blancas[index].id;
-
-                    }
-
-                break;
-
-                case "reyblanco":
-
-                    if(movRey(posicionAtacante,recuadro,"blanca",true) ){
-
-                        atacante = blancas[index].id;
-
-                    }
-
-                break;
-
-            }
-            
         }
-
 
     }
 
-    return atacante;
+}
+
+
+/*Permite saber si es posible enrocar al rey*/
+
+function enrocable(color){
+
+    let izq = true;
+    let der = true;
+
+    if(color === "negro"){
+
+        switch(false){
+
+            case estaVacio("b8"):
+
+                izq = false;
+
+            break;
+
+            case estaVacio("c8"):
+                
+                izq = false;
+
+            break;
+
+            case estaVacio("d8"):
+
+                izq = false;
+
+            break;
+
+            default:
+
+                if(enroqueNL){
+
+                    izq = true;
+
+                }
+        }
+
+        switch(false){
+
+            case estaVacio("g8"):
+                
+                der = false;
+
+            break;
+
+            case estaVacio("f8"):
+
+                der = false;
+
+            break;
+
+            default:
+
+                if(enroqueNC){
+
+                    der = true;
+
+                }
+        }
+
+        if(document.getElementsByClassName("a8")[0].firstChild != null){
+
+            if(document.getElementsByClassName("a8")[0].firstChild.classList[1] === "torrenegra" && izq === true && amenaza("c8","negra") === false){
+
+                return true;
+    
+            }
+
+        }
+
+        if(document.getElementsByClassName("h8")[0].firstChild != null){
+
+            if(document.getElementsByClassName("h8")[0].firstChild.classList[1] === "torrenegra" && der === true && amenaza("g8","negra") === false){
+
+                return true;
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+    if(color === "blanco"){
+
+        switch(false){
+
+            case estaVacio("b1"):
+
+                izq = false;
+
+            break;
+
+            case estaVacio("c1"):
+                
+                izq = false;
+
+            break;
+
+            case estaVacio("d1"):
+
+                izq = false;
+
+            break;
+
+            default:
+
+                if(enroqueBL){
+
+                    izq = true;
+
+                }
+        }
+
+        switch(false){
+
+            case estaVacio("g1"):
+                
+                der = false;
+
+            break;
+
+            case estaVacio("f1"):
+
+                der = false;
+
+            break;
+
+            default:
+
+                if(enroqueBC){
+
+                    der = true;
+
+                }
+        }
+
+        if(document.getElementsByClassName("a1")[0].firstChild != null){
+
+            if(document.getElementsByClassName("a1")[0].firstChild.classList[1] === "torreblanca" && izq === true  && amenaza("c1","blanca") === false){
+
+                return true;
+
+            }
+
+        }
+
+        if(document.getElementsByClassName("h1")[0].firstChild != null){
+
+            if(document.getElementsByClassName("h1")[0].firstChild.classList[1] === "torreblanca" && der === true  && amenaza("g1","blanca") === false){
+
+                return true;
+
+            }
+
+        }
+
+        return false;
+
+    }
 
 }
 
-/*Funcion que se encarga de la mecanica de jaque*/
+/*Funcion que actualiza el estado de estar o no en jaque de ambos reyes*/
 
 function jaque(){
 
-    //Rey negro
     if(amenaza(reynegro.parentNode.classList[0],"negra")){
 
         negroenjaque = true;
@@ -2542,7 +2588,6 @@ function jaque(){
 
     }
 
-    //Rey negro
     if(amenaza(reyblanco.parentNode.classList[0],"blanca")){
 
         blancoenjaque = true;
@@ -2550,8 +2595,845 @@ function jaque(){
     }else{
 
         blancoenjaque = false;
+        
+    }
+
+}
+
+/* Jaque mate */
+
+function jaqueMate(){
+
+
+    if(turno%2 != 0 && blancoenjaque === true){ //turno de las blancas
+
+        let escapes = vecinos(reyblanco.parentNode.classList[0]);
+
+        for (let index = 0; index < escapes.length; index++) {
+            
+            if(amenaza(escapes[index],"blanca")){ //si el escape esta amenazado, ya no es viable
+
+                    escapes.splice(index,1);
+
+                    index--;
+
+            }else{
+
+                if(!estaVacio(escapes[index]) && !sePuedeComer("blanca",escapes[index],true) ){ //si el escape que no esta amenazado, no esta vacio y la pieza no se puede comer, tampoco es viable
+
+                    escapes.splice(index,1);
+
+                    index--;
+                    
+                }
+
+
+            }
+            
+        }
+        
+        if(escapes.length === 0 && enrocable("blanco") === false && posibleDefensa() === false){
+
+            ganaron("negras");
+        }
+
+    }else if(turno%2 === 0 && negroenjaque === true){ // si es el turno de las negras
+
+        let escapes = vecinos(reynegro.parentNode.classList[0]);
+
+        for (let index = 0; index < escapes.length; index++) {
+            
+            if(amenaza(escapes[index],"negra")){ //si el escape esta amenazado, ya no es viable
+
+                escapes.splice(index,1);
+
+                index--;
+            }else{
+
+                if(!estaVacio(escapes[index]) && !sePuedeComer("negra",escapes[index],true)){ //si el escape que no esta amenazado, no esta vacio y la pieza no se puede comer, tampoco es viable
+
+                    escapes.splice(index,1);
+
+                    index--;
+
+                }
+
+            }
+            
+        }
+        
+        if(escapes.length === 0 && enrocable("negro") === false && posibleDefensa() === false){
+
+            ganaron("blancas");
+        }
 
     }
 
+}
+
+//Funcion que le dice al programa si esta permitido ese movimiento, se usa para ver temas de jaque mate
+
+
+function posibleAtaque(tipopieza, origen, destino){
+
+        if(tipopieza === "peonblanco"){
+
+
+            return movPeonBlanco(origen, destino,true);
+    
+        }
+
+        if(tipopieza === "torreblanca"){
+
+
+            return movTorre(origen, destino, "blanca",true);
+    
+        }
+
+        if(tipopieza === "afilblanco"){
+
+
+            return movAfil(origen, destino, "blanca",true);
+    
+        }
+
+        if(tipopieza === "reinablanca"){
+
+
+            return movReina(origen, destino, "blanca",true);
+    
+        }
+
+        if(tipopieza === "caballoblanco"){
+
+
+            return movCaballo(origen, destino, "blanca",true);
+    
+        }
+
+        if(tipopieza === "reyblanco"){
+
+            return movRey(origen, destino, "blanca",true);
+    
+        }
+
+        if(tipopieza === "peonnegro"){
+
+            return movPeonNegro(origen, destino,true);
+    
+        }
+
+        if(tipopieza === "torrenegra"){
+
+
+            return movTorre(origen, destino, "negra",true);
+    
+        }
+
+        if(tipopieza === "afilnegro"){
+
+
+            return movAfil(origen, destino, "negra",true);
+    
+        }
+
+        if(tipopieza === "reinanegra"){
+
+
+            return movReina(origen, destino, "negra",true);
+    
+        }
+
+        if(tipopieza === "caballonegro"){
+
+
+            return movCaballo(origen, destino, "negra",true);
+    
+        }
+
+        if(tipopieza === "reynegro"){
+
+            return movRey(origen, destino, "negra",true);
+    
+        }
+}
+
+/*Saber cual es la pieza que me tiene en jaque*/
+
+function quienMeAtaca(){
+
+    if(turno%2 != 0 && blancoenjaque === true){ //turno de las blancas
+
+        for (let index = 0; index < piezas.length; index++) {
+
+            if(posibleAtaque(piezas[index].classList[1], piezas[index].anterior.classList[0], reyblanco.parentNode.classList[0])){
+
+                return piezas[index].id;
+
+            }
+            
+        }       
+    }else if(turno%2 === 0 && negroenjaque === true){ //turno de las negras
+
+        for (let index = 0; index < piezas.length; index++) {
+
+            if(posibleAtaque(piezas[index].classList[1], piezas[index].anterior.classList[0], reynegro.parentNode.classList[0])){
+
+                return piezas[index].id;
+
+            }
+            
+        }       
+    }
+
+}
+
+/* Nos dice si es posible que el rey en jaque escape, se defienda o sea defendido */
+
+function posibleDefensa(){
+
+
+    if(turno%2 != 0 && blancoenjaque === true){ //turno de las blancas
+
+        for (let index = 0; index < piezas.length; index++) {
+
+            if(posibleAtaque(piezas[index].classList[1], piezas[index].anterior.classList[0], document.getElementById(quienMeAtaca()).parentNode.classList[0])){
+
+                if( piezas[index].anterior.classList[0] !=  document.getElementById(quienMeAtaca()).parentNode.classList[0]){
+
+                    return true;
+
+                }
+            }else{
+
+                switch(document.getElementById(quienMeAtaca()).classList[1]){
+
+                    case "afilnegro":
+
+                        for (let inde = 0; inde < sniperAfil(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperAfil(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde] )){
+
+                                return piezas[index].classList[2] === "blanca";
+                            }
+
+                            
+                        }
+                    break;
+
+                    case "torrenegra":
+                            
+                        for (let inde = 0; inde < sniperTorre(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperTorre(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde]  )){
+
+                                return piezas[index].classList[2] === "blanca";
+                            }
+                            
+                        }
+                    break;
+
+                    case "reinanegra":
+                         
+                        for (let inde = 0; inde < sniperReina(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperReina(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde]  )){
+                                
+                                return piezas[index].classList[2] === "blanca";
+                            }
+                            
+                        }
+
+                       
+                    break;
+                    
+
+                }
+
+            }
+            
+        }       
+    }else if(turno%2 === 0 && negroenjaque === true){ //turno de las negras
+
+        for (let index = 0; index < piezas.length; index++) {
+
+            if(posibleAtaque(piezas[index].classList[1], piezas[index].anterior.classList[0], document.getElementById(quienMeAtaca()).parentNode.classList[0])){
+
+                if( piezas[index].anterior.classList[0] !=  document.getElementById(quienMeAtaca()).parentNode.classList[0]){
+
+                    return true
+
+                }
+
+
+            }else{
+
+                switch(document.getElementById(quienMeAtaca()).classList[1]){
+
+                    case "afilblanco":
+
+                        for (let inde = 0; inde < sniperAfil(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperAfil(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde] )){
+
+                                return piezas[index].classList[2] === "negra";
+                            }
+
+                            
+                        }
+                    break;
+
+                    case "torreblanca":
+                            
+                        for (let inde = 0; inde < sniperTorre(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperTorre(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde]  )){
+
+                                return piezas[index].classList[2] === "negra";
+                            }
+                            
+                        }
+                    break;
+
+                    case "reinablanca":
+                         
+                        for (let inde = 0; inde < sniperReina(document.getElementById(quienMeAtaca()).parentNode.classList[0]).length; inde++) {
+                            if(posibleMovimientoDefensivo(piezas[index].classList[1], piezas[index].anterior.classList[0], sniperReina(document.getElementById(quienMeAtaca()).parentNode.classList[0])[inde]  )){
+
+                                return piezas[index].classList[2] === "negra";
+                            }
+                            
+                        }
+
+                       
+                    break;
+                   
+
+
+                }
+
+            }
+            
+        }       
+    }
+
+    return false
+
+}
+
+function ganaron(equipo){
+
+    let ganador = "";
+
+    if(equipo === "blancas"){
+
+        ganador = document.getElementById("gananblancas");
+
+    }else{
+
+        ganador = document.getElementById("ganannegras");
+
+    }
+
+    ganador.style.display = "initial";
+
+}
+
+//recibe el recuadro donde esta la pieza que tiene en jaque al rey, y devuelve un camino de recuadros que tiene que seguir para llegar
+
+function sniperTorre(recuadro){
+
+
+    let rey = "";
+
+
+    if(negroenjaque){
+
+        rey = reynegro;
+
+    }else if(blancoenjaque){
+
+        rey = reyblanco;
+
+    }
+
+    //obtenemos las letras y numeros del recuadro por separado
+ 
+    const letra = recuadro.charAt(0);
+    const numero = Number(recuadro.charAt(1));
+ 
+    //Con los ciclos while vamos obteniendo arrays de las piezas que estan en las 4 direcciones.
+ 
+    let arriba = [];
+    let abajo = [];
+    let derecha = [];
+    let izquierda = [];
+ 
+    let indiceY = numero;
+    let indiceX = equivale(letra);
+
+    let salir = false;
+ 
+    while(indiceY < 8 && salir === false){
+ 
+        indiceY++;
+ 
+            arriba.push(letra+indiceY);
+
+        if(!estaVacio(letra+indiceY)){
+
+            if(document.getElementsByClassName(letra+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    
+    }
+ 
+    indiceY = numero;
+ 
+    while(indiceY > 1 && salir === false){
+ 
+        indiceY--;
+
+        abajo.push(letra+indiceY);
+ 
+        if(!estaVacio(letra+indiceY)){
+
+            if(document.getElementsByClassName(letra+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    }
+ 
+    while(indiceX < 8 && salir === false){
+ 
+        indiceX++;
+
+        derecha.push(equivale(indiceX)+numero);
+
+        if(!estaVacio(equivale(indiceX)+numero)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+numero)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+ 
+        
+    }
+ 
+    indiceX = equivale(letra);
+ 
+    while(indiceX > 1 && salir === false){
+ 
+        indiceX--;
+ 
+        izquierda.push(equivale(indiceX)+numero);
+ 
+        if(!estaVacio(equivale(indiceX)+numero)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+numero)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    }
+ 
+    switch(true){
+
+        case arriba.includes(rey.parentNode.classList[0]):
+
+        arriba.pop();
+
+        return arriba;
+
+        break;
+
+        case derecha.includes(rey.parentNode.classList[0]):
+
+        derecha.pop();
+
+        return derecha;
+
+        break;
+
+        case abajo.includes(rey.parentNode.classList[0]):
+
+        abajo.pop();
+
+        return abajo;
+
+        break;
+
+        case izquierda.includes(rey.parentNode.classList[0]):
+
+        izquierda.pop();
+
+        return izquierda;
+
+        break;
+    }
+ 
+}
+
+//recibe el recuadro donde esta la pieza que tiene en jaque al rey, y devuelve un camino de recuadros que tiene que seguir para llegar
+
+function sniperAfil(recuadro){
+
+    let rey = "";
+
+
+    if(negroenjaque){
+
+        rey = reynegro;
+
+    }else if(blancoenjaque){
+
+        rey = reyblanco;
+
+    }
+
+    //obtenemos las letras y numeros del recuadro por separado
+ 
+    const letra = recuadro.charAt(0);
+    const numero = Number(recuadro.charAt(1));
+ 
+    //Con los ciclos while vamos obteniendo arrays de las piezas que estan en las 4 direcciones.
+ 
+    let noreste = [];
+    let sureste = [];
+    let suroeste = [];
+    let noroeste = [];
+ 
+    let indiceY = numero;
+    let indiceX = equivale(letra);
+
+    let salir = false;
+ 
+    while(indiceY < 8 && indiceX < 8 && salir === false){
+ 
+        indiceY++;
+        indiceX++;
+ 
+            noreste.push(equivale(indiceX)+indiceY);
+
+        if(!estaVacio(equivale(indiceX)+indiceY)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    
+    }
+ 
+    indiceY = numero;
+    indiceX = equivale(letra);
+ 
+    while(indiceY > 1 && indiceX < 8 && salir === false){
+ 
+        indiceY--;
+        indiceX++;
+
+        sureste.push(equivale(indiceX)+indiceY);
+ 
+        if(!estaVacio(equivale(indiceX)+indiceY)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    }
+
+    indiceY = numero;
+    indiceX = equivale(letra);
+ 
+    while(indiceY > 1 && indiceX > 1 && salir === false){
+ 
+        indiceY--;
+        indiceX--;
+
+        suroeste.push(equivale(indiceX)+indiceY);
+
+        if(!estaVacio(equivale(indiceX)+indiceY)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+ 
+        
+    }
+ 
+    indiceY = numero;
+    indiceX = equivale(letra);
+ 
+    while(indiceY < 8 && indiceX > 1 && salir === false){
+ 
+        indiceY++;
+        indiceX--;
+ 
+        noroeste.push(equivale(indiceX)+indiceY);
+ 
+        if(!estaVacio(equivale(indiceX)+indiceY)){
+
+            if(document.getElementsByClassName(equivale(indiceX)+indiceY)[0].firstChild === rey){
+
+                salir = true;
+            }
+
+        }
+    }
+ 
+    switch(true){
+
+        case noreste.includes(rey.parentNode.classList[0]):
+
+        noreste.pop();
+
+        return noreste;
+
+        break;
+
+        case sureste.includes(rey.parentNode.classList[0]):
+
+        sureste.pop();
+
+        return sureste;
+
+        break;
+
+        case suroeste.includes(rey.parentNode.classList[0]):
+
+        suroeste.pop();
+
+        return suroeste;
+
+        break;
+
+        case noroeste.includes(rey.parentNode.classList[0]):
+
+        noroeste.pop();
+
+        return noroeste;
+
+        break;
+    }
+ 
+}
+
+function sniperReina(recuadro){
+
+    const letra = recuadro.charAt(0);
+    const numero = recuadro.charAt(1);
+
+    let rey = "";
+
+    if(negroenjaque){
+
+        rey = reynegro;
+
+    }else if(blancoenjaque){
+
+        rey = reyblanco;
+
+    }
+
+    if(letra === reynegro.parentNode.classList[0].charAt(0) || numero === reynegro.parentNode.classList[0].charAt(1)){
+
+        return sniperTorre(recuadro);
+
+    }else{
+
+        return sniperAfil(recuadro);
+
+    }
+
+
+
+}
+
+//funcion que calcula los movimientos posibles del peon blanco y devuelve si coincide con un movimiento defensivo para el rey negro
+
+function movPeonBlancoDefensa(origen, destino,prueba){
+
+
+    //obtenemos las letras y numeros de las posiciones por separado
+
+    const letrao = origen.charAt(0);
+    const numeroo = Number(origen.charAt(1));
+    const letrad = destino.charAt(0);
+    const numerod = Number(destino.charAt(1));
+
+    //el numero de destino para un peon blanco debe ser siempre mayor
+
+    if(numerod<=numeroo){
+
+        return false
+
+    }else{ //si el numero es mayor, pasamos a ver los 4 posibles movimientos
+
+        //cuando se hace un movimiento simple hacia adelante
+
+        if(letrao === letrad && numerod === numeroo + 1){
+
+            return estaVacio(destino);        
+
+        }
+
+        //cuando se hace un movimiento doble hacia adelante como primer movimiento del peon
+
+        if(numeroo === 2 && letrao === letrad && numerod === 4){
+
+            return estaVacio(destino);        
+
+        }
+
+        //cuando se va a comer una pieza
+
+        if(equivale(letrad) === equivale(letrao)-1  && numerod-1 === numeroo || equivale(letrad) === equivale(letrao)+1  && numerod-1 === numeroo ){
+
+            if (estaVacio(destino) === false){
+
+                return sePuedeComer("blanca", destino,prueba);
+
+            }        
+
+        }
+
+    }
+
+}
+
+//Funcion que calcula los movimientos posibles del peon negro y devuelve si coincide con un movimiento defensivo para el rey negro
+
+function movPeonNegroDefensa(origen, destino,prueba){
+
+    //obtenemos las letras y numeros de las posiciones por separado
+
+    const letrao = origen.charAt(0);
+    const numeroo = Number(origen.charAt(1));
+    const letrad = destino.charAt(0);
+    const numerod = Number(destino.charAt(1));
+
+    //el numero de destino para un peon negro debe ser siempre menor
+
+    if(numerod>=numeroo){
+
+        return false
+
+    }else{ //si el numero es menor, pasamos a ver los 4 posibles movimientos
+
+        //cuando se hace un movimiento simple hacia adelante
+
+        if(letrao === letrad && numerod === numeroo - 1){
+
+
+            return estaVacio(destino);        
+
+        }
+
+        //cuando se hace un movimiento doble hacia adelante como primer movimiento del peon
+
+        if(numeroo === 7 && letrao === letrad && numerod === numeroo - 2){
+
+
+            return estaVacio(destino);        
+
+        }
+
+        //cuando se va a comer una pieza
+
+        if(equivale(letrad) === equivale(letrao)-1  && numerod+1 === numeroo || equivale(letrad) === equivale(letrao)+1  && numerod+1 === numeroo ){
+
+            if (estaVacio(destino) === false){
+
+                return sePuedeComer("negra", destino,prueba);
+
+            }        
+
+        }
+
+    }
+
+}
+
+//Funcion que nos dice si la pieza podria moverse a cubrir al rey
+
+function posibleMovimientoDefensivo(tipopieza, origen, destino){
+
+    if(tipopieza === "peonblanco"){
+
+        return movPeonBlancoDefensa(origen, destino,true);
+
+    }
+
+    if(tipopieza === "torreblanca"){
+
+
+        return movTorre(origen, destino, "blanca",true);
+
+    }
+
+    if(tipopieza === "afilblanco"){
+
+
+        return movAfil(origen, destino, "blanca",true);
+
+    }
+
+    if(tipopieza === "reinablanca"){
+
+
+        return movReina(origen, destino, "blanca",true);
+
+    }
+
+    if(tipopieza === "caballoblanco"){
+
+
+        return movCaballo(origen, destino, "blanca",true);
+
+    }
+
+    if(tipopieza === "peonnegro"){
+
+        return movPeonNegroDefensa(origen, destino,true);
+
+    }
+
+    if(tipopieza === "torrenegra"){
+
+
+        return movTorre(origen, destino, "negra",true);
+
+    }
+
+    if(tipopieza === "afilnegro"){
+
+
+        return movAfil(origen, destino, "negra",true);
+
+    }
+
+    if(tipopieza === "reinanegra"){
+
+
+        return movReina(origen, destino, "negra",true);
+
+    }
+
+    if(tipopieza === "caballonegro"){
+
+
+        return movCaballo(origen, destino, "negra",true);
+
+    }
 
 }
